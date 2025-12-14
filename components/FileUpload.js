@@ -26,10 +26,11 @@ export default function FileUpload() {
     setLoading(true);
     try {
       // 1. Parse Resume
+      const basePath = process.env.NEXT_PUBLIC_BASEPATH || '';
       const formData = new FormData();
       formData.append('file', file);
 
-      const parseRes = await fetch('/api/parse-resume', {
+      const parseRes = await fetch(`${basePath}/api/parse-resume`, {
         method: 'POST',
         body: formData,
       });

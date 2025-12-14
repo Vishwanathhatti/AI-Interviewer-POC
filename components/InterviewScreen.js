@@ -49,20 +49,26 @@ export default function InterviewScreen() {
         const text = textOverride || transcript;
         if (!text && !textOverride) return;
 
-        // Add user message to UI
+        let currentHistory = [...chatHistory];
+
+        // Add user message to UI and history for API
         if (!textOverride) {
-            addChatMessage({ role: 'user', content: text });
+            const userMsg = { role: 'user', content: text };
+            addChatMessage(userMsg);
+            currentHistory.push(userMsg);
         }
         
         setIsProcessing(true);
         stopListening(); // Stop listening while processing
 
+        const basePath = process.env.NEXT_PUBLIC_BASEPATH || '';
+
         try {
-            const res = await fetch('/api/interview', {
+            const res = await fetch(`${basePath}/api/interview`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    history: chatHistory, 
+                    history: currentHistory, 
                     resumeText, 
                     jobDescription,
                     difficulty 
@@ -101,8 +107,10 @@ export default function InterviewScreen() {
         cancelSpeech();
         stopListening();
 
+        const basePath = process.env.NEXT_PUBLIC_BASEPATH || '';
+
         try {
-            const res = await fetch('/api/evaluate', {
+            const res = await fetch(`${basePath}/api/evaluate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
